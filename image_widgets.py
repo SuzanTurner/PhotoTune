@@ -27,7 +27,7 @@ class ImageOutput(Canvas):
 
         self.bind("<Configure>", resize_image)
 
-        self.grid(row = 0, column= 1, sticky= "news")
+        self.grid(row = 0, column= 1, sticky= "news", padx = 10, pady = 10)
 
 class CloseOutput(ctk.CTkButton):
     def __init__(self, parent, close_func):

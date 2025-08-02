@@ -1,8 +1,9 @@
 import customtkinter as ctk
 from tkinter import ttk
 from image_widgets import Button_frame, ImageOutput, CloseOutput
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageOps
 from menu import Menu
+from settings import *
 
 class SizeGrep(ttk.Sizegrip):
     def __init__(self, parent):
@@ -11,6 +12,7 @@ class SizeGrep(ttk.Sizegrip):
 
 class Window(ctk.CTk):
     def __init__(self):
+
         super().__init__()
         ctk.set_appearance_mode("dark")
         self.geometry("900x500")
@@ -20,15 +22,43 @@ class Window(ctk.CTk):
         self.columnconfigure(0, weight = 2, uniform = "a")
         self.columnconfigure(1, weight = 6, uniform = "a")
 
+        # canvas data
+        self.image_width = 0
+        self.image_height = 0
+        self.canvas_width = 0
+        self.canvas_width = 0
+
+        self.init_parameters()
+
         SizeGrep(self)
+
         self.image_import = Button_frame(self, self.import_image)
 
         self.bind("<KeyPress>", lambda event : self.quit())
 
         self.mainloop()
+    
+    def init_parameters(self):
+        self.rotate_float = ctk.DoubleVar(value = ROTATE_DEFAULT)
+        self.rotate_float.trace('w', self.manipulate_image)
+
+        self.zoom_float = ctk.DoubleVar(value = ZOOM_DEFAULT)
+        self.zoom_float.trace('w', self.manipulate_image)
+
+    def manipulate_image(self, *args):
+        self.image = self.original
+
+        # Rotate
+        self.image = self.image.rotate(self.rotate_float.get())
+
+        #Zoom
+        self.image = ImageOps.crop(image = self.image, border = self.zoom_float.get())
+
+        self.place_image()
 
     def import_image(self, path):
-        self.image = Image.open(path)
+        self.original = Image.open(path)
+        self.image = self.original
         # self.image.show()
         self.image_ratio = self.image.size[0] / self.image.size[1]
 
@@ -36,7 +66,7 @@ class Window(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.appmenu = Menu(self)
+        self.appmenu = Menu(self, self.rotate_float, self.zoom_float)
         
 
         print(path)
@@ -46,21 +76,27 @@ class Window(ctk.CTk):
         # current canvas ratio
         canvas_ratio = event.width / event.height
 
+        # canvas data
+        self.canvas_width = event.width
+        self.canvas_height = event.height
+
         # resize
         if canvas_ratio > self.image_ratio:
-            image_height = int(event.height)
-            image_width = int(image_height * self.image_ratio)
+            self.image_height = int(event.height)
+            self.image_width = int(self.image_height * self.image_ratio)
 
         else:
-            image_width = int(event.width)
-            image_height = int(image_width / self.image_ratio)
+            self.image_width = int(event.width)
+            self.image_height = int(self.image_width / self.image_ratio)
+
+        self.place_image()
 
         # resized image
-
+    def place_image(self):
         self.image_output.delete("all")
-        resized_image = self.image.resize((image_width, image_height))
+        resized_image = self.image.resize((self.image_width, self.image_height))
         self.image_tk = ImageTk.PhotoImage(resized_image)
-        self.image_output.create_image(event.width / 2 , event.height / 2 , image = self.image_tk)
+        self.image_output.create_image(self.canvas_width / 2 , self.canvas_height / 2 , image = self.image_tk)
 
     def close_edit(self):
         self.image_output.grid_forget()
