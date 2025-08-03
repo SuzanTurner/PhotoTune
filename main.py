@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import ttk
 from image_widgets import Button_frame, ImageOutput, CloseOutput
-from PIL import Image, ImageTk, ImageOps
+from PIL import Image, ImageTk, ImageOps, ImageEnhance, ImageFilter
 from menu import Menu
 from settings import *
 
@@ -86,6 +86,29 @@ class Window(ctk.CTk):
         if self.pos_vars['flip'].get() == 'Both':
             self.image = ImageOps.mirror(self.image)
             self.image = ImageOps.flip(self.image)
+
+        # Brightness and vibrance
+        brightness_enhancer = ImageEnhance.Brightness(self.image)
+        self.image = brightness_enhancer.enhance(self.color_vars["brightness"].get())
+
+        vibrance_enhancer = ImageEnhance.Color(self.image)
+        self.image = vibrance_enhancer.enhance(self.color_vars["vibrance"].get())
+
+        # grayscale and invert
+        if self.color_vars["grayscale"].get():
+            self.image = ImageOps.grayscale(self.image)
+        if self.color_vars["invert"].get():
+            if self.image.mode == "RGBA":
+                # Split image into RGB and Alpha
+                r, g, b, a = self.image.split()
+                # Merge inverted RGB with original alpha
+                rgb_image = Image.merge("RGB", (r, g, b))
+                inverted_image = ImageOps.invert(rgb_image)
+                r2, g2, b2 = inverted_image.split()
+                self.image = Image.merge("RGBA", (r2, g2, b2, a))
+            else:
+                self.image = ImageOps.invert(self.image)
+                
 
         self.place_image()
 
