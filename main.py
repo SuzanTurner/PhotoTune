@@ -39,20 +39,44 @@ class Window(ctk.CTk):
         self.mainloop()
     
     def init_parameters(self):
-        self.rotate_float = ctk.DoubleVar(value = ROTATE_DEFAULT)
-        self.rotate_float.trace('w', self.manipulate_image)
+        self.pos_vars = {
+            'rotate' : ctk.DoubleVar(value = ROTATE_DEFAULT),
+            'zoom' : ctk.DoubleVar(value = ZOOM_DEFAULT),
+            'flip' : ctk.StringVar(value = FLIP_OPTIONS[0]),
+        }
 
-        self.zoom_float = ctk.DoubleVar(value = ZOOM_DEFAULT)
-        self.zoom_float.trace('w', self.manipulate_image)
+        # self.rotate_float = ctk.DoubleVar(value = ROTATE_DEFAULT)
+        # self.rotate_float.trace('w', self.manipulate_image)
+
+        # self.zoom_float = ctk.DoubleVar(value = ZOOM_DEFAULT)
+        # self.zoom_float.trace('w', self.manipulate_image)
+
+        self.color_vars = {
+            'brightness' : ctk.DoubleVar(value = BRIGHTNESS_DEFAULT),
+            'grayscale' : ctk.BooleanVar(value = GRAYSCALE_DEFAULT),
+            'invert' : ctk.BooleanVar(value = INVERT_DEFAULT),
+            'vibrance' : ctk.DoubleVar(value = VIBRANCE_DEFAULT),
+        }
+
+        self.effect_vars = {
+            'blur' : ctk.DoubleVar(value= BLUR_DEFAULT) ,
+            'contrast' : ctk.IntVar(value = CONTRAST_DEFAULT),
+            'effect' : ctk.StringVar(value = EFFECT_OPTIONS[0]),
+        }
+
+        # tracing
+        combined_tracing = list(self.pos_vars.values()) + list(self.color_vars.values()) + list(self.effect_vars.values())
+        for var in combined_tracing:
+            var.trace('w', self.manipulate_image)
 
     def manipulate_image(self, *args):
         self.image = self.original
 
         # Rotate
-        self.image = self.image.rotate(self.rotate_float.get())
+        self.image = self.image.rotate(self.pos_vars['rotate'].get())
 
         #Zoom
-        self.image = ImageOps.crop(image = self.image, border = self.zoom_float.get())
+        self.image = ImageOps.crop(image = self.image, border = self.pos_vars['zoom'].get())
 
         self.place_image()
 
@@ -66,7 +90,7 @@ class Window(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.appmenu = Menu(self, self.rotate_float, self.zoom_float)
+        self.appmenu = Menu(self, self.pos_vars, self.color_vars, self.effect_vars)
         
 
         print(path)
@@ -92,6 +116,7 @@ class Window(ctk.CTk):
         self.place_image()
 
         # resized image
+        
     def place_image(self):
         self.image_output.delete("all")
         resized_image = self.image.resize((self.image_width, self.image_height))

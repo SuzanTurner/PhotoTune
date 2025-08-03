@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from settings import SLIDER_BG, DARK_GREY
+from settings import SLIDER_BG, DARK_GREY, BLUE, SLIDER_BG
 
 class Panel(ctk.CTkFrame):
     def __init__(self, parent):
@@ -27,3 +27,22 @@ class SliderPanel(Panel):
         
     def update_text(self, value):
         self.num_label.configure(text = f"{round(value,2)}")
+
+class SegmentedPanel(Panel):
+    def __init__(self,parent, text, data_var, options):
+        super().__init__(parent)
+
+        ctk.CTkLabel(self, text = text).pack()
+        ctk.CTkSegmentedButton(self,variable = data_var, values = options).pack(expand = True, fill = "both", padx = 4, pady = 4)
+
+class SwitchPanel(Panel):
+    def __init__(self, parent, *args):
+        super().__init__(parent)
+        for var, text in args:
+            switch = ctk.CTkSwitch(self, text = text, variable=var, fg_color=BLUE, button_color= SLIDER_BG)
+            switch.pack(side = "left", expand = True, fill = "both", padx = 5, pady = 5)
+
+class DropDown(ctk.CTkOptionMenu):
+    def __init__(self, parent, data_var, options):
+        super().__init__(parent, values= options, variable= data_var)
+        self.pack(fill = "x", pady = 4)
