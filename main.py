@@ -73,26 +73,31 @@ class Window(ctk.CTk):
         self.image = self.original
 
         # Rotate
-        self.image = self.image.rotate(self.pos_vars['rotate'].get())
+        if self.pos_vars["rotate"].get() != ROTATE_DEFAULT:
+            self.image = self.image.rotate(self.pos_vars['rotate'].get())
 
         #Zoom
-        self.image = ImageOps.crop(image = self.image, border = self.pos_vars['zoom'].get())
+        if self.pos_vars["zoom"].get() != ZOOM_DEFAULT:
+            self.image = ImageOps.crop(image = self.image, border = self.pos_vars['zoom'].get())
 
         # Flip
-        if self.pos_vars['flip'].get() == 'X':
-            self.image = ImageOps.mirror(self.image)
-        if self.pos_vars['flip'].get() == 'Y':
-            self.image = ImageOps.flip(self.image)
-        if self.pos_vars['flip'].get() == 'Both':
-            self.image = ImageOps.mirror(self.image)
-            self.image = ImageOps.flip(self.image)
+        if self.pos_vars["flip"].get() != FLIP_OPTIONS[0]:
+            if self.pos_vars['flip'].get() == 'X':
+                self.image = ImageOps.mirror(self.image)
+            if self.pos_vars['flip'].get() == 'Y':
+                self.image = ImageOps.flip(self.image)
+            if self.pos_vars['flip'].get() == 'Both':
+                self.image = ImageOps.mirror(self.image)
+                self.image = ImageOps.flip(self.image)
 
         # Brightness and vibrance
-        brightness_enhancer = ImageEnhance.Brightness(self.image)
-        self.image = brightness_enhancer.enhance(self.color_vars["brightness"].get())
+        if self.color_vars["brightness"] != BRIGHTNESS_DEFAULT:
+            brightness_enhancer = ImageEnhance.Brightness(self.image)
+            self.image = brightness_enhancer.enhance(self.color_vars["brightness"].get())
 
-        vibrance_enhancer = ImageEnhance.Color(self.image)
-        self.image = vibrance_enhancer.enhance(self.color_vars["vibrance"].get())
+        if self.color_vars["vibrance"] != VIBRANCE_DEFAULT:
+            vibrance_enhancer = ImageEnhance.Color(self.image)
+            self.image = vibrance_enhancer.enhance(self.color_vars["vibrance"].get())
 
         # grayscale and invert
         if self.color_vars["grayscale"].get():
@@ -108,7 +113,19 @@ class Window(ctk.CTk):
                 self.image = Image.merge("RGBA", (r2, g2, b2, a))
             else:
                 self.image = ImageOps.invert(self.image)
-                
+
+        # blur and contrast
+        if self.effect_vars["blur"] != BLUR_DEFAULT:
+            self.image = self.image.filter(ImageFilter.GaussianBlur(self.effect_vars["blur"].get()))
+
+        if self.effect_vars["contrast"] != CONTRAST_DEFAULT:
+            self.image = self.image.filter(ImageFilter.UnsharpMask(self.effect_vars["contrast"].get()))
+
+        match self.effect_vars["effect"].get():
+            case 'Emboss' : self.image = self.image.filter(ImageFilter.EMBOSS)
+            case 'Find Edges' : self.image = self.image.filter(ImageFilter.FIND_EDGES)
+            case 'Contour' : self.image = self.image.filter(ImageFilter.CONTOUR)
+            case 'Edge Enhance' : self.image = self.image.filter(ImageFilter.EDGE_ENHANCE_MORE)
 
         self.place_image()
 
