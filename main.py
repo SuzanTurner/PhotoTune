@@ -78,6 +78,15 @@ class Window(ctk.CTk):
         #Zoom
         self.image = ImageOps.crop(image = self.image, border = self.pos_vars['zoom'].get())
 
+        # Flip
+        if self.pos_vars['flip'].get() == 'X':
+            self.image = ImageOps.mirror(self.image)
+        if self.pos_vars['flip'].get() == 'Y':
+            self.image = ImageOps.flip(self.image)
+        if self.pos_vars['flip'].get() == 'Both':
+            self.image = ImageOps.mirror(self.image)
+            self.image = ImageOps.flip(self.image)
+
         self.place_image()
 
     def import_image(self, path):
