@@ -59,3 +59,13 @@ class RevertButton(ctk.CTkButton):
         for var, value in self.args:
             var.set(value)
 
+class FileNamePanel(Panel):
+    def __init__(self, parent, name_string, file_string):
+        super().__init__(parent)
+
+        self.name_string = name_string
+        self.file_string = file_string
+
+        ctk.CTkEntry(self, textvariable= self.name_string).pack(fill = "x", padx = 20, pady = 5)
+
+        
