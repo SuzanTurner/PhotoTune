@@ -4,6 +4,7 @@ from image_widgets import Button_frame, ImageOutput, CloseOutput
 from PIL import Image, ImageTk, ImageOps, ImageEnhance, ImageFilter
 from menu import Menu
 from settings import *
+from tkinter import messagebox
 
 class SizeGrep(ttk.Sizegrip):
     def __init__(self, parent):
@@ -34,7 +35,7 @@ class Window(ctk.CTk):
 
         self.image_import = Button_frame(self, self.import_image)
 
-        self.bind("<KeyPress>", lambda event : self.quit())
+        self.bind("<KeyPress-q>", lambda event : self.quit())
 
         self.mainloop()
     
@@ -139,7 +140,7 @@ class Window(ctk.CTk):
         self.image_import.grid_forget()
         self.image_output = ImageOutput(self, self.resize_image)
         self.close_button = CloseOutput(self, self.close_edit)
-        self.appmenu = Menu(self, self.pos_vars, self.color_vars, self.effect_vars)
+        self.appmenu = Menu(self, self.pos_vars, self.color_vars, self.effect_vars, self.export_image)
         
 
         print(path)
@@ -178,6 +179,11 @@ class Window(ctk.CTk):
         self.appmenu.grid_forget()
         
         self.image_import = Button_frame(self, self.import_image)
+
+    def export_image(self, name, file, path):
+        export_string = f"{path}/{name}.{file}"
+        messagebox.showinfo(message = f"Image Saved! at {export_string}")
+        self.image.save(export_string)
 
 
 if __name__ ==  "__main__":
