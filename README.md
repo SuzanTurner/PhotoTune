@@ -30,8 +30,12 @@ Four major features : Position. Color, Effects, Export
 ### 4. **Export:**
   - Allows to export in two formats: JPG and PNG
   - Allows custom file name and location
-  
+
+## Setup:
+Download the main.exe file and run it in your pc. 
+> If you wish to make changes, clone this repo and open the src directory. 
+
+---
 
 ## Author - Yadhnika Wakde
-
-> Python is life!
+Python is life!
