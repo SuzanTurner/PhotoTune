@@ -10,7 +10,7 @@ Packed into an installable .exe via PyInstaller, this tool offers quick and easy
 2. PIL
 
 ## Features:
-Four major features : Position. Color, Effects, Export
+Four major features : Position, Color, Effects, Export
 
 ### 1. **Position:**
   - Rotatiof of image from 0 to 360
